@@ -1,52 +1,94 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace BubbleSort
 {
     class Sorting
     {
-        static void Main(string[] args)
-        {
-            Student s1 = new Student() { Age = 33, Name = "Mixalis" };
-            Student s2 = new Student() { Age = 19, Name = "Maria" };
-            Student s3 = new Student() { Age = 22, Name = "Damianos" };
-            Student s4 = new Student() { Age = 18, Name = "Takis" };
-
-            Student[] students = { s1, s2, s3, s4 };
-
-            Print(students, "Original Array");
-            BubbleSortOrderBy(students);
-            Print(students, "Sorted Array");
-        }
-
-        private static void Print(Student[] sortdedData, string message)
-        {
-            Console.WriteLine($"{message}");
-            foreach (Student s in sortdedData)
-                Console.WriteLine($"{s.Name,-15}{s.Age,-15}");
-        }
-
-        private static void BubbleSortOrderBy(Student[] mixdata)
-        {
-            Student temp;
-            int size = mixdata.Length - 1;
-            for (int j = 0; j < size; j++)
+            static void Main(string[] args)
             {
-                for (int i = 0; i < size; i++)
+                Sorting sr = new Sorting();
+                sr.SortArrayWithBucketSort();
+                
+            }
+            private void SortArrayWithBucketSort()
+            {
+                double[] array = { 0.37, 0.25, 0.86, 0.23, 0.09, 0.21, 0.17, 0.71 };
+                double[] sortedArray = BucketSort(array);
+
+                foreach (var item in array)
                 {
-                    if (mixdata[i].Age > mixdata[i + 1].Age)
+                    Console.WriteLine(item);
+                }
+            }
+
+            public double[] BucketSort(double[] array)
+            {
+                List<List<double>> buckets = new List<List<double>>();
+                InitializeBuckets(buckets);
+
+                Scatter(array, buckets);
+
+                int i = 0;
+                foreach (List<double> bucket in buckets)
+                {
+                    double[] arr = bucket.ToArray();
+                    InsertionSort(arr);
+
+                    foreach (double d in arr)
                     {
-                        temp = mixdata[i + 1];
-                        mixdata[i + 1] = mixdata[i];
-                        mixdata[i] = temp;
+                        array[i++] = d;
+                    }
+                }
+
+                return array;
+            }
+
+            private void Scatter(double[] array, List<List<double>> buckets)
+            {
+                foreach (double value in array)
+                {
+                    int bucketNumber = GetBucketNumber(value);
+                    buckets[bucketNumber].Add(value);
+                }
+            }
+
+            private void InsertionSort(double[] array)
+            {
+                int j;
+                double temp;
+
+                for (int i = 1; i < array.Length; i++)
+                {
+                    j = i;
+                    while (j > 0 && array[j] < array[j - 1])
+                    {
+                        temp = array[j];
+                        array[j] = array[j - 1];
+                        array[j - 1] = temp;
+                        j--;
                     }
                 }
             }
-        }
+
+            private int GetBucketNumber(double value)
+            {
+                double val = value * 10;
+                int bucketNumber = (int)Math.Floor(val);
+                return bucketNumber;
+            }
+
+            private static void InitializeBuckets(List<List<double>> buckets)
+            {
+                for (int i = 0; i < 10; i++)
+                {
+                    List<double> a = new List<double>();
+                    buckets.Add(a);
+                }
+            }
+        
+
+        
     }
 }
 
-class Student
-{
-    public int Age { get; set; }
-    public string Name { get; set; }
-}
